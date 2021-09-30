@@ -1,11 +1,10 @@
 import './App.css';
-import {Layout, Row, Col, Card, Input, Divider} from "antd";
+import { Row, Col, Input, Divider} from "antd";
 import {useState} from "react";
 import {getInstance} from "d2";
 import HeaderBar from "@dhis2/d2-ui-header-bar"
 import {Button, Pane, Text} from "evergreen-ui";
 
-const { Header, Footer, Content } = Layout;
 
 function App() {
 
@@ -53,7 +52,7 @@ function App() {
                             <Input
                                 type="file"
                                 style={{ width: "100%" }}
-                                accept="xls/*"
+                                accept=".xlsx, .xls, .csv"
                                 placeholder="select excel file"
                                 size="large"
                                 className="mt-2 w-100"
@@ -63,7 +62,7 @@ function App() {
                     </Row>
                     <Row className="w-25 mt-4">
                         <Col span={24}>
-                            <Button marginRight={16} appearance="primary">
+                            <Button appearance="primary">
                                 POST
                             </Button>
                         </Col>
