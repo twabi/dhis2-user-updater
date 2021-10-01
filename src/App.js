@@ -1,13 +1,13 @@
 import './App.css';
 import {Row, Col, Input, Divider, Modal, Progress} from "antd";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getInstance} from "d2";
 import HeaderBar from "@dhis2/d2-ui-header-bar"
 import {Button, Pane, Text} from "evergreen-ui";
 import readXlsxFile from 'read-excel-file'
 
 
-function App() {
+function App(props) {
 
     const [D2, setD2] = useState();
     const [uploadedFile, setUploadedFile] = useState(null);
@@ -16,6 +16,16 @@ function App() {
     const [statusText, setStatusText] = useState("normal");
     const [messageText, setMessageText] = useState("Checking excel sheet.....");
     const [sheetState, setSheetState] = useState([]);
+    const [groups, setGroups] = useState(props.userGroups);
+    const [roles, setRoles] = useState(props.userRoles);
+    const [users, setUsers] = useState(props.users);
+
+
+    useEffect(() => {
+        setGroups(props.userGroups);
+        setUsers(props.users);
+        setRoles(props.userRoles);
+    }, [props]);
 
     const handleCancel = () => {
         setAlertModal(false);
@@ -67,17 +77,24 @@ function App() {
 
 
             console.log(sheetState);
-            sheetState.map((sheet) => {
+            sheetState.map((sheet, x) => {
 
                 setTimeout(() => {
-                    setMessageText("Posting user updates...");
-                }, 2000);
+                    setMessageText("Updating users in : " + sheet.sheetName);
+                    var perce = (x/sheetState.length)*100 ;
+                    var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
+                    setStatus( otherNumber + 2);
+                }, 5000);
 
                 if(sheet.sheetName === "Dedza"){
-                    //console.log(sheet.rows);
+
+
+
                     var userIndex, roleIndex;
                     var passIndex;
                     var groupIndex;
+                    var firstIndex = sheet.rows[0].findIndex(x => x === "First name");
+                    var lastIndex = sheet.rows[0].findIndex(x => x === "Surname");
                     userIndex = sheet.rows[0].findIndex(x => x === "Username");
                     passIndex = sheet.rows[0].findIndex(x => x === "Password");
                     groupIndex = sheet.rows[0].findIndex(x => x === "Groups");
@@ -85,23 +102,32 @@ function App() {
 
                     sheet.rows.map((row, index) => {
                         if(index !== 0){
-                            console.log(userIndex, passIndex, groupIndex);
-                            console.log(row[userIndex], row[passIndex], row[groupIndex]);
+                            var newPassword = row[passIndex];
+                            var userRoles = row[roleIndex].split("||");
+                            var userGroups = row[groupIndex].split("||");
+
+                            userRoles.map((role, index) => {
+                                var dRole = roles[roles.findIndex(x => x.displayName === role.trim())]
+                                userRoles[index] = dRole.id;
+                            });
+                            userGroups.map((group, index) => {
+                                var dGroup = groups[groups.findIndex(x => x.displayName === group.trim())];
+                                userGroups[index] = dGroup.id;
+                            });
+
+                            var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex]))]//&&
+                                //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
+
+                            if(user !== undefined){
+                                console.log(user);
+                            }
                         }
-
-
                     });
                 }
-            })
-
-
+            });
         }
 
     };
-
-    const otherFunction = () => {
-        console.log(sheetState);
-    }
 
     return (
         <div className="App">
@@ -132,7 +158,7 @@ function App() {
                         <strong>User Updates</strong>
                     </h5>
 
-                    <Text size={800}>
+                    <Text size={600}>
                         <strong>Select the excel file with user updates</strong>
                     </Text>
 
