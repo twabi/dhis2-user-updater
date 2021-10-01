@@ -14,7 +14,7 @@ const LoadData = () => {
 
         getInstance().then((d2) => {
             setD2(d2);
-            const userPoint = "users.json?fields=id,name,userCredentials[username,userRoles],userGroups";
+            const userPoint = "users.json?fields=id,firstName,surname,name,organisationUnits,userCredentials[id,userInfo,username,userRoles],userGroups";
             const groupPoint = "userGroups.json?paging=false";
             const rolesPoint = "userRoles.json?paging=false"
 

@@ -108,18 +108,45 @@ function App(props) {
 
                             userRoles.map((role, index) => {
                                 var dRole = roles[roles.findIndex(x => x.displayName === role.trim())]
-                                userRoles[index] = dRole.id;
+                                userRoles[index] = {"id" : dRole.id};
                             });
                             userGroups.map((group, index) => {
                                 var dGroup = groups[groups.findIndex(x => x.displayName === group.trim())];
-                                userGroups[index] = dGroup.id;
+                                userGroups[index] = {"id" : dGroup.id};
                             });
 
+                            console.log(userRoles);
                             var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex]))]//&&
                                 //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
 
                             if(user !== undefined){
                                 console.log(user);
+
+                                var payload = {
+                                    "id": user.id,
+                                    "firstName": user.firstName,
+                                    "surname": user.surname,
+                                    "userCredentials": {
+                                        "id": user.id,
+                                        "userInfo": {
+                                            "id": user.userCredentials.userInfo.id
+                                        },
+                                        "username": user.userCredentials.username,
+                                        "password": newPassword,
+                                        "userRoles": [
+                                            userRoles
+                                        ]
+                                    },
+                                    "organisationUnits": [
+                                        user.organisationUnits
+                                    ],
+                                    "userGroups": [
+                                        userGroups
+                                    ]
+                                }
+
+                                console.log(payload);
+
                             }
                         }
                     });
