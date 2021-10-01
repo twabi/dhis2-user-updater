@@ -19,9 +19,11 @@ function App(props) {
     const [groups, setGroups] = useState(props.userGroups);
     const [roles, setRoles] = useState(props.userRoles);
     const [users, setUsers] = useState(props.users);
+    const [auth, setAuth] = useState(props.auth);
 
 
     useEffect(() => {
+        setAuth(props.auth);
         setGroups(props.userGroups);
         setUsers(props.users);
         setRoles(props.userRoles);
@@ -78,12 +80,11 @@ function App(props) {
 
             console.log(sheetState);
             sheetState.map((sheet, x) => {
-
+                var perce = (x/sheetState.length)*100 ;
                 setTimeout(() => {
                     setMessageText("Updating users in : " + sheet.sheetName);
-                    var perce = (x/sheetState.length)*100 ;
                     var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
-                    setStatus( otherNumber + 2);
+                    setStatus(otherNumber);
                 }, 5000);
 
                 if(sheet.sheetName === "Dedza"){
@@ -101,6 +102,9 @@ function App(props) {
                     roleIndex = sheet.rows[0].findIndex(x => x === "Roles");
 
                     sheet.rows.map((row, index) => {
+                        var perce2 = (x/sheet.rows.length)*100;
+                        var otherNumber = Math.round( (perce2/perce) * 100 + Number.EPSILON ) / 100;
+                        console.log(otherNumber);
                         if(index !== 0){
                             var newPassword = row[passIndex];
                             var userRoles = row[roleIndex].split("||");
@@ -133,19 +137,34 @@ function App(props) {
                                         },
                                         "username": user.userCredentials.username,
                                         "password": newPassword,
-                                        "userRoles": [
-                                            userRoles
-                                        ]
+                                        "userRoles": userRoles
                                     },
-                                    "organisationUnits": [
-                                        user.organisationUnits
-                                    ],
-                                    "userGroups": [
-                                        userGroups
-                                    ]
+                                    "organisationUnits": user.organisationUnits,
+                                    "userGroups": userGroups
                                 }
 
                                 console.log(payload);
+
+                                fetch(`https://covmw.com/namistest/api/users/${user.id}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify(payload),
+                                    headers: {
+                                        'Authorization' : auth,
+                                        'Content-type': 'application/json',
+                                    },
+                                    credentials: "include"
+
+                                }).then(response => {
+                                        console.log(response);
+
+                                        if(response.status === 200 || response.status === 201){
+                                            setTimeout(() => {
+                                                setMessageText("User updated");
+                                                setStatusText("success");
+                                            }, 2000);
+
+                                        }
+                                    });
 
                             }
                         }

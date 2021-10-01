@@ -39,7 +39,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
     ReactDOM.render(
         <Provider config={appConfig}>
             <HashRouter>
-                <LoadData/>
+                <LoadData auth={initialAuth}/>
             </HashRouter>
         </Provider>
         , document.getElementById("root"));

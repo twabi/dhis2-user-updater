@@ -1,16 +1,18 @@
-import React, {Fragment}from "react";
+import React, {Fragment, useState} from "react";
 import {getInstance} from "d2";
 import {Switch, Route} from "react-router-dom";
 import App from "./App";
 
-const LoadData = () => {
+const LoadData = (props) => {
 
     const [users, setUsers] = React.useState([]);
     const [userGroups, setGroups] = React.useState([]);
     const [roles, setRoles] = React.useState([]);
     const [D2, setD2] = React.useState();
+    const [initAuth, setInitAuth] = useState(props.auth);
 
     React.useEffect(() => {
+        setInitAuth(props.auth);
 
         getInstance().then((d2) => {
             setD2(d2);
@@ -52,14 +54,20 @@ const LoadData = () => {
                 });
         });
 
-    }, []);
+    }, [props]);
 
 
     return (
             <Fragment>
                 <Switch>
                     <Route path="/"  render={(props) => (
-                        <App {...props} d2={D2} users={users} userGroups={userGroups} userRoles={roles}/>
+                        <App {...props}
+                             auth={initAuth}
+                             d2={D2}
+                             users={users}
+                             userGroups={userGroups}
+                             userRoles={roles}
+                        />
                     )} exact/>
                 </Switch>
             </Fragment>
