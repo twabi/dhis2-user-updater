@@ -10,6 +10,7 @@ import {getInstance, init} from "d2";
 import {HashRouter} from "react-router-dom";
 import { Provider } from '@dhis2/app-runtime'
 import LoginModal from "./loginModal";
+import LoadData from "./LoadData";
 
 const initialAuth = "Basic " + btoa(":");
 
@@ -38,7 +39,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
     ReactDOM.render(
         <Provider config={appConfig}>
             <HashRouter>
-                <App/>
+                <LoadData/>
             </HashRouter>
         </Provider>
         , document.getElementById("root"));
