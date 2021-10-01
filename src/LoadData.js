@@ -10,6 +10,7 @@ const LoadData = (props) => {
     const [roles, setRoles] = React.useState([]);
     const [D2, setD2] = React.useState();
     const [initAuth, setInitAuth] = useState(props.auth);
+    const [orgUnits, setOrgUnits] = React.useState([]);
 
     React.useEffect(() => {
         setInitAuth(props.auth);
@@ -18,12 +19,13 @@ const LoadData = (props) => {
             setD2(d2);
             const userPoint = "users.json?fields=id,firstName,surname,name,organisationUnits,userCredentials[id,userInfo,username,userRoles],userGroups";
             const groupPoint = "userGroups.json?paging=false";
-            const rolesPoint = "userRoles.json?paging=false"
+            const rolesPoint = "userRoles.json?paging=false";
+            const orgEndpoint = "organisationUnits.json?fields=id,name&paging=false";
 
             //get the users from their endpoint
             d2.Api.getApi().get(userPoint)
                 .then((response) => {
-                    console.log(response.users);
+                    //console.log(response.users);
                     setUsers(response.users);
                 })
                 .catch((error) => {
@@ -34,7 +36,7 @@ const LoadData = (props) => {
             //get all the user groups defined in the system
             d2.Api.getApi().get(groupPoint)
                 .then((response) => {
-                    console.log(response.userGroups);
+                    //console.log(response.userGroups);
                     setGroups(response.userGroups);
                 })
                 .catch((error) => {
@@ -45,13 +47,22 @@ const LoadData = (props) => {
             //get all the user roles available in the system
             d2.Api.getApi().get(rolesPoint)
                 .then((response) => {
-                    console.log(response.userRoles);
+                    //console.log(response.userRoles);
                     setRoles(response.userRoles);
                 })
                 .catch((error) => {
                     console.log(error);
                     alert("An error occurred: " + error);
                 });
+
+            d2.Api.getApi().get(orgEndpoint).then((response) => {
+                //console.log(response.userRoles);
+                setOrgUnits(response.organisationUnits);
+            })
+                .catch((error) => {
+                    console.log(error);
+                    alert("An error occurred: " + error);
+            });
         });
 
     }, [props]);
@@ -65,6 +76,7 @@ const LoadData = (props) => {
                              auth={initAuth}
                              d2={D2}
                              users={users}
+                             orgUnits={orgUnits}
                              userGroups={userGroups}
                              userRoles={roles}
                         />

@@ -20,6 +20,7 @@ function App(props) {
     const [roles, setRoles] = useState(props.userRoles);
     const [users, setUsers] = useState(props.users);
     const [auth, setAuth] = useState(props.auth);
+    const [orgUnits, setOrgUnits] = useState(props.orgUnits);
 
 
     useEffect(() => {
@@ -27,6 +28,7 @@ function App(props) {
         setGroups(props.userGroups);
         setUsers(props.users);
         setRoles(props.userRoles);
+        setOrgUnits(props.orgUnits);
     }, [props]);
 
     const handleCancel = () => {
@@ -64,6 +66,7 @@ function App(props) {
 
     const  processFile = async () => {
         setStatus(0);
+        setStatusText("normal");
 
         if(uploadedFile == null){
             setAlertModal(true);
@@ -77,51 +80,59 @@ function App(props) {
             setMessageText("Reading excel file...");
 
 
-
             console.log(sheetState);
             sheetState.map((sheet, x) => {
-                var perce = (x/sheetState.length)*100 ;
-                setTimeout(() => {
-                    setMessageText("Updating users in : " + sheet.sheetName);
-                    var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
-                    setStatus(otherNumber);
-                }, 5000);
-
                 if(sheet.sheetName === "Dedza"){
 
+                    var perce = (x/sheetState.length)*100 ;
+                    setTimeout(() => {
+                        setMessageText("Updating users in : " + sheet.sheetName);
+                        //var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
+                        //setStatus(otherNumber + 10);
+                    }, 2000);
 
 
-                    var userIndex, roleIndex;
-                    var passIndex;
-                    var groupIndex;
                     var firstIndex = sheet.rows[0].findIndex(x => x === "First name");
                     var lastIndex = sheet.rows[0].findIndex(x => x === "Surname");
-                    userIndex = sheet.rows[0].findIndex(x => x === "Username");
-                    passIndex = sheet.rows[0].findIndex(x => x === "Password");
-                    groupIndex = sheet.rows[0].findIndex(x => x === "Groups");
-                    roleIndex = sheet.rows[0].findIndex(x => x === "Roles");
+                    var userIndex = sheet.rows[0].findIndex(x => x === "Username");
+                    var passIndex = sheet.rows[0].findIndex(x => x === "Password");
+                    var groupIndex = sheet.rows[0].findIndex(x => x === "Groups");
+                    var roleIndex = sheet.rows[0].findIndex(x => x === "Roles");
+                    var oucaptureIndex = sheet.rows[0].findIndex(x => x === "OUCapture");
 
-                    sheet.rows.map((row, index) => {
+
+                    sheet.rows.map(async (row, index) => {
                         var perce2 = (x/sheet.rows.length)*100;
-                        var otherNumber = Math.round( (perce2/perce) * 100 + Number.EPSILON ) / 100;
-                        console.log(otherNumber);
+
+                        setTimeout(() => {
+                            var otherNumber = Math.round( perce2 * 100 + Number.EPSILON ) / 100;
+                            setStatus(otherNumber + 10);
+                        }, 3000);
                         if(index !== 0){
                             var newPassword = row[passIndex];
                             var userRoles = row[roleIndex].split("||");
                             var userGroups = row[groupIndex].split("||");
+                            var orgUs = row[oucaptureIndex].split("||")
 
                             userRoles.map((role, index) => {
                                 var dRole = roles[roles.findIndex(x => x.displayName === role.trim())]
                                 userRoles[index] = {"id" : dRole.id};
                             });
                             userGroups.map((group, index) => {
+                                console.log(group);
                                 var dGroup = groups[groups.findIndex(x => x.displayName === group.trim())];
                                 userGroups[index] = {"id" : dGroup.id};
                             });
 
+                            orgUs.map((org, index) => {
+                                var dOrg = orgUnits[orgUnits.findIndex(x => x.name === org.trim())];
+                                orgUs[index] = {"id" : dOrg.id}
+                            })
+
                             console.log(userRoles);
-                            var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex]))]//&&
-                                //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
+                            var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex])&&
+                                (String(x.firstName).trim() === row[firstIndex]))]//&&
+                            //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
 
                             if(user !== undefined){
                                 console.log(user);
@@ -139,11 +150,13 @@ function App(props) {
                                         "password": newPassword,
                                         "userRoles": userRoles
                                     },
-                                    "organisationUnits": user.organisationUnits,
-                                    "userGroups": userGroups
+                                    "organisationUnits": orgUs,
+                                    "userGroups": userGroups,
+                                    "dataViewOrganisationUnits": orgUs
                                 }
 
                                 console.log(payload);
+
 
                                 fetch(`https://covmw.com/namistest/api/users/${user.id}`, {
                                     method: 'PUT',
@@ -163,17 +176,88 @@ function App(props) {
                                                 setStatusText("success");
                                             }, 2000);
 
+                                        } else {
+                                            setMessageText("Unable to update user : error");
+                                            setStatusText("exception");
                                         }
                                     });
+
+
+
+                            } else {
+                                const id = await getID();
+                                const credID = await getID();
+
+                                var secondPay = {
+                                    "id": id,
+                                    "firstName": row[firstIndex],
+                                    "surname": row[lastIndex],
+                                    "userCredentials": {
+                                        "id": credID,
+                                        "userInfo": {
+                                            "id": id
+                                        },
+                                        "username": row[userIndex],
+                                        "password": newPassword,
+                                        "userRoles": userRoles
+                                    },
+                                    "organisationUnits": orgUs,
+                                    "userGroups": userGroups,
+                                    "dataViewOrganisationUnits": orgUs
+                                }
+
+                                console.log(secondPay);
+
+
+                                fetch(`https://covmw.com/namistest/api/users`, {
+                                    method: 'POST',
+                                    body: JSON.stringify(secondPay),
+                                    headers: {
+                                        'Authorization' : auth,
+                                        'Content-type': 'application/json',
+                                    },
+                                    credentials: "include"
+
+                                }).then(response => {
+                                    console.log(response);
+
+                                    if(response.status === 200 || response.status === 201){
+                                        setTimeout(() => {
+                                            setMessageText("User Created");
+                                            setStatusText("success");
+                                        }, 2000);
+
+                                    } else {
+                                        setMessageText("Unable to create User : error");
+                                        setStatusText("exception");
+                                    }
+                                });
+
 
                             }
                         }
                     });
                 }
+
             });
         }
 
     };
+
+    const getID = async () => {
+        return await fetch(`https://covmw.com/namistest/api/system/id`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : auth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        }).then(response => response.json()).then((result) => {
+            //console.log(result);
+            return result.codes[0];
+        });
+    }
 
     return (
         <div className="App">
