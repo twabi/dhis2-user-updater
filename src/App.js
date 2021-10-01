@@ -82,7 +82,7 @@ function App(props) {
 
             console.log(sheetState);
             sheetState.map((sheet, x) => {
-                if(sheet.sheetName === "Dedza"){
+                //if(sheet.sheetName === "Dedza"){
 
                     var perce = (x/sheetState.length)*100 ;
                     setTimeout(() => {
@@ -155,7 +155,7 @@ function App(props) {
                                     "dataViewOrganisationUnits": orgUs
                                 }
 
-                                console.log(payload);
+                                //console.log(payload);
 
 
                                 fetch(`https://covmw.com/namistest/api/users/${user.id}`, {
@@ -206,7 +206,7 @@ function App(props) {
                                     "dataViewOrganisationUnits": orgUs
                                 }
 
-                                console.log(secondPay);
+                                //console.log(secondPay);
 
 
                                 fetch(`https://covmw.com/namistest/api/users`, {
@@ -237,7 +237,7 @@ function App(props) {
                             }
                         }
                     });
-                }
+                //}
 
             });
         }
