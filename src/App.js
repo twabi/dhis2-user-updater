@@ -87,18 +87,17 @@ function App(props) {
                     var perce = (x/sheetState.length)*100 ;
                     setTimeout(() => {
                         setMessageText("Updating users in : " + sheet.sheetName);
-                        //var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
-                        //setStatus(otherNumber + 10);
+                        var otherNumber = Math.round( perce * 100 + Number.EPSILON ) / 100;
+                        setStatus(otherNumber + 10);
                     }, 2000);
 
-
-                    var firstIndex = sheet.rows[0].findIndex(x => x === "First name");
-                    var lastIndex = sheet.rows[0].findIndex(x => x === "Surname");
-                    var userIndex = sheet.rows[0].findIndex(x => x === "Username");
-                    var passIndex = sheet.rows[0].findIndex(x => x === "Password");
-                    var groupIndex = sheet.rows[0].findIndex(x => x === "Groups");
-                    var roleIndex = sheet.rows[0].findIndex(x => x === "Roles");
-                    var oucaptureIndex = sheet.rows[0].findIndex(x => x === "OUCapture");
+                    var firstIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "first name");
+                    var lastIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "surname");
+                    var userIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "username");
+                    var passIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "password");
+                    var groupIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "groups");
+                    var roleIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "roles");
+                    var oucaptureIndex = sheet.rows[0].findIndex(x => x.toLowerCase() === "oucapture");
 
 
                     sheet.rows.map(async (row, index) => {
@@ -116,24 +115,41 @@ function App(props) {
 
                             userRoles.map((role, index) => {
                                 var dRole = roles[roles.findIndex(x => x.displayName === role.trim())]
-                                userRoles[index] = {"id" : dRole.id};
+                                if(dRole === undefined){
+                                    userRoles[index] = {"id" : role.trim()};
+                                } else {
+                                    userRoles[index] = {"id" : dRole&&dRole.id};
+                                }
+
                             });
                             userGroups.map((group, index) => {
-                                console.log(group);
                                 var dGroup = groups[groups.findIndex(x => x.displayName === group.trim())];
-                                userGroups[index] = {"id" : dGroup.id};
+                                if(dGroup === undefined){
+                                    userGroups[index] = {"id" : group.trim()};
+                                } else {
+                                    userGroups[index] = {"id" : dGroup&&dGroup.id};
+                                }
+
                             });
 
                             orgUs.map((org, index) => {
                                 var dOrg = orgUnits[orgUnits.findIndex(x => x.name === org.trim())];
-                                orgUs[index] = {"id" : dOrg.id}
+                                console.log(dOrg)
+                                if(dOrg === undefined){
+                                    orgUs[index] = {"id" : org.trim()};
+                                } else {
+                                    orgUs[index] = {"id" : dOrg&&dOrg.id};
+                                }
+
                             })
 
-                            console.log(userRoles);
+                            //console.log(userRoles);
                             var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex])&&
                                 (String(x.firstName).trim() === row[firstIndex]))]//&&
                             //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
-
+                            console.log(row[userIndex], row[firstIndex])
+                            console.log(user);
+                            console.log(users);
                             if(user !== undefined){
                                 console.log(user);
 
@@ -185,6 +201,15 @@ function App(props) {
 
 
                             } else {
+
+                                var user1 = users[users.findIndex(x => (x.userCredentials.username === row[userIndex]))]
+                                var username = row[userIndex];
+                                if(user1 !== undefined){
+                                    username = username + "1";
+                                }
+
+                                console.log(username);
+
                                 const id = await getID();
                                 const credID = await getID();
 
@@ -197,7 +222,7 @@ function App(props) {
                                         "userInfo": {
                                             "id": id
                                         },
-                                        "username": row[userIndex],
+                                        "username": username,
                                         "password": newPassword,
                                         "userRoles": userRoles
                                     },
@@ -288,7 +313,7 @@ function App(props) {
                         <strong>User Updates</strong>
                     </h5>
 
-                    <Text size={600}>
+                    <Text size={500}>
                         <strong>Select the excel file with user updates</strong>
                     </Text>
 
