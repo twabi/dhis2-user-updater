@@ -2,7 +2,7 @@ import React from "react";
 import {Form, Input, Button, Modal} from 'antd';
 import {withBaseUrl} from "./index";
 
-var url = "https://covmw.com/namistest/"
+var url = "https://ccdev.org/chisdev/"
 
 const LoginModal = () => {
     const [visible, setVisible] = React.useState(true);

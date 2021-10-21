@@ -15,11 +15,11 @@ import LoadData from "./LoadData";
 const initialAuth = "Basic " + btoa(":");
 
 
-const developmentServer = "https://covmw.com/maintest/api/";
+const developmentServer = "https://ccdev.org/chisdev/api/";
 export const withBaseUrl = (baseUrl, initialAuth) => {
 
     const appConfig = {
-        baseUrl: 'https://covmw.com/maintest/',
+        baseUrl: 'https://ccdev.org/chisdev/',
         apiVersion: 0,
         headers:{
             Authorization: initialAuth,
@@ -45,7 +45,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
         , document.getElementById("root"));
 };
 
-fetch("https://covmw.com/namistest/api", {
+fetch(developmentServer, {
     method: 'GET',
     headers: {
         'Authorization' : initialAuth,
