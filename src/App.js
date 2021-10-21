@@ -174,7 +174,7 @@ function App(props) {
                                 //console.log(payload);
 
 
-                                fetch(`https://covmw.com/namistest/api/users/${user.id}`, {
+                                fetch(`https://ccdev.org/chistest/api/users/${user.id}`, {
                                     method: 'PUT',
                                     body: JSON.stringify(payload),
                                     headers: {
@@ -234,7 +234,7 @@ function App(props) {
                                 //console.log(secondPay);
 
 
-                                fetch(`https://covmw.com/namistest/api/users`, {
+                                fetch(`https://ccdev.org/chistest/api/users`, {
                                     method: 'POST',
                                     body: JSON.stringify(secondPay),
                                     headers: {
@@ -270,7 +270,7 @@ function App(props) {
     };
 
     const getID = async () => {
-        return await fetch(`https://covmw.com/namistest/api/system/id`, {
+        return await fetch(`https://ccdev.org/chistest/api/system/id`, {
             method: 'GET',
             headers: {
                 'Authorization' : auth,

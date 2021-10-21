@@ -15,11 +15,11 @@ import LoadData from "./LoadData";
 const initialAuth = "Basic " + btoa(":");
 
 
-const developmentServer = "https://ccdev.org/chisdev/api/";
+const developmentServer = "https://ccdev.org/chistest/api/";
 export const withBaseUrl = (baseUrl, initialAuth) => {
 
     const appConfig = {
-        baseUrl: 'https://ccdev.org/chisdev/',
+        baseUrl: 'https://ccdev.org/chistest/',
         apiVersion: 0,
         headers:{
             Authorization: initialAuth,
