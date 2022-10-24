@@ -15,11 +15,11 @@ import LoadData from "./LoadData";
 const initialAuth = "Basic " + btoa(":");
 
 
-const developmentServer = "https://ccdev.org/chisdev/api/29/";
+const developmentServer = "https://ccdev.org/chistest/api/29/";
 export const withBaseUrl = (baseUrl, initialAuth) => {
 
     const appConfig = {
-        baseUrl: 'https://ccdev.org/chisdev/',
+        baseUrl: 'https://ccdev.org/chistest/',
         apiVersion: 0,
         headers:{
             Authorization: initialAuth,
@@ -45,7 +45,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
         , document.getElementById("root"));
 };
 
-fetch(developmentServer, {
+fetch("https://ccdev.org/chistest/api/36/me/authorization", {
     method: 'GET',
     headers: {
         'Authorization' : initialAuth,

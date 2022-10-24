@@ -25,7 +25,7 @@ const LoadData = (props) => {
             //get the users from their endpoint
             d2.Api.getApi().get(userPoint)
                 .then((response) => {
-                    //console.log(response.users);
+                    console.log(response.users);
                     setUsers(response.users);
                 })
                 .catch((error) => {
@@ -36,7 +36,7 @@ const LoadData = (props) => {
             //get all the user groups defined in the system
             d2.Api.getApi().get(groupPoint)
                 .then((response) => {
-                    //console.log(response.userGroups);
+                    console.log(response.userGroups);
                     setGroups(response.userGroups);
                 })
                 .catch((error) => {

@@ -7,6 +7,7 @@ import {Button, Pane, Text} from "evergreen-ui";
 import readXlsxFile from 'read-excel-file'
 
 
+const url = "https://ccdev.org/chistest/api/users";
 function App(props) {
 
     const [D2, setD2] = useState();
@@ -97,7 +98,8 @@ function App(props) {
                     var passIndex = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "password");
                     var groupIndex = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "groups");
                     var roleIndex = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "roles");
-                    var oucaptureIndex = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "oucapture");
+                    //var oucaptureIndex = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "oucapture");
+                    var ouCaptureID = sheet.rows[0].findIndex(x => x&&x.toLowerCase() === "oucaptureoutput id");
 
 
                     sheet.rows.map(async (row, index) => {
@@ -111,7 +113,9 @@ function App(props) {
                             var newPassword = row[passIndex];
                             var userRoles = row[roleIndex]&&row[roleIndex].split("||");
                             var userGroups = row[groupIndex]&&row[groupIndex].split("||");
-                            var orgUs = row[oucaptureIndex]&&row[oucaptureIndex].split("||")
+                            var orgUs = row[ouCaptureID]&&row[ouCaptureID].split("||");
+
+                            console.log(userRoles, userGroups, orgUs);
 
                             userRoles.map((role, index) => {
                                 var dRole = roles[roles.findIndex(x => x.displayName === role.trim())]
@@ -122,6 +126,7 @@ function App(props) {
                                 }
 
                             });
+
                             userGroups.map((group, index) => {
                                 var dGroup = groups[groups.findIndex(x => x.displayName === group.trim())];
                                 if(dGroup === undefined){
@@ -132,14 +137,20 @@ function App(props) {
 
                             });
 
-                            orgUs.map((org, index) => {
-                                //console.log(org);
+                            orgUs?.map((org, index) => {
+                                console.log(org);
                                 //console.log(orgUnits)
-                                var dOrg = orgUnits[orgUnits.findIndex(x => x.name.replace(/\s/g, '').trim().toLowerCase()
+                                var dOrg = orgUnits[orgUnits.findIndex(x => x.id.replace(/\s/g, '').trim().toLowerCase()
                                     === org.replace(/\s/g, '').trim().toLowerCase())];
-                                //console.log(dOrg)
+                                console.log(dOrg, org)
                                 if(dOrg === undefined){
-                                    orgUs[index] = {"id" : org.trim()};
+                                    dOrg = orgUnits.find(x => org.replace(/\s/g, '').trim()
+                                        .toLowerCase().split(' ')[0].includes(x.id.replace(/\s/g, '').trim().toLowerCase()));
+                                    orgUs[index] = {"id" : dOrg&&dOrg.id};
+                                    if(dOrg === undefined){
+                                        orgUs[index] = {"id" : org.trim()};
+                                    }
+
                                 } else {
                                     orgUs[index] = {"id" : dOrg&&dOrg.id};
                                 }
@@ -150,9 +161,11 @@ function App(props) {
                             var user = users[users.findIndex(x => (x.userCredentials.username === row[userIndex])&&
                                 (String(x.firstName).trim() === row[firstIndex]))]//&&
                             //(x.name === (row[firstIndex] + " " + row[lastIndex])))]
-                            console.log(row[userIndex], row[firstIndex])
+                            //console.log(row[userIndex], row[firstIndex])
                             console.log(user);
-                            console.log(users);
+                            //console.log(users);
+
+
                             if(user !== undefined){
                                 console.log(user);
 
@@ -174,11 +187,9 @@ function App(props) {
                                     "dataViewOrganisationUnits": orgUs
                                 }
 
-                                //console.log(payload);
+                                console.log(payload);
 
-
-
-                                fetch(`https://ccdev.org/chisdev/api/users/${user.id}`, {
+                                fetch(`${url}/${user.id}`, {
                                     method: 'PUT',
                                     body: JSON.stringify(payload),
                                     headers: {
@@ -240,7 +251,7 @@ function App(props) {
 
 
 
-                                fetch(`https://ccdev.org/chisdev/api/users`, {
+                                fetch(`${url}`, {
                                     method: 'POST',
                                     body: JSON.stringify(secondPay),
                                     headers: {
@@ -264,8 +275,9 @@ function App(props) {
                                     }
                                 });
 
-
                             }
+
+
                         }
                     });
                 //}
@@ -276,7 +288,7 @@ function App(props) {
     };
 
     const getID = async () => {
-        return await fetch(`https://ccdev.org/chisdev/api/system/id`, {
+        return await fetch(`https://ccdev.org/chistest/api/system/id`, {
             method: 'GET',
             headers: {
                 'Authorization' : auth,
